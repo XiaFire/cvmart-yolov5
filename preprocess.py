@@ -1,3 +1,4 @@
+# _*_ coding:utf-8 _*_
 import xml.etree.ElementTree as ET
 import pickle
 import os
@@ -7,16 +8,12 @@ import cv2
 import logging
 from glob import glob
 import time
-import random
-
 '''
 YOLO v5 
 xml -> txt
 '''
 
-classes = ['fixed_stall','sunshade','drying_object']
-class2id = {name:i for i, name in enumerate(classes)}
-
+class2id = {'rust':0,'dirty':1,'scratches':2,'defect':3}
 def convert(size, box):
     dw = 1./(size[0])
     dh = 1./(size[1])
@@ -55,23 +52,11 @@ def convert_annotation(image_path):
         xmlbox = obj.find('bndbox')
         b = (float(xmlbox.find('xmin').text), float(xmlbox.find('xmax').text), float(xmlbox.find('ymin').text), float(xmlbox.find('ymax').text))
         bb = convert((w,h), b,)
+        out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
 
-# 1. 转换数据label
-files = glob('/home/data/*/*.xml')
-for file in files:
-    convert_annotation(file)
+files = glob('/home/data/993/*.xml')
 
-# 2. 划分train与valid ~ K折
-K = 5
-files = glob('/home/data/*/*.txt')
-random.shuffle(files)
-ind = len(files) // 5
-train = [x.replace('.txt', '.jpg')+'\n' for x in files[ind:]]
-valid = [x.replace('.txt', '.jpg')+'\n' for x in files[:ind]]
-print(f"train {len(train)}, valid {len(valid)}")
+if __name__ == '__main__':
+    for file in files:
+        convert_annotation(file)
 
-# 3. 写入文件
-with open('train.txt', 'w') as f:
-    f.writelines(train)
-with open('valid.txt', 'w') as f:
-    f.writelines(valid)
