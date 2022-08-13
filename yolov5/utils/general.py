@@ -466,13 +466,13 @@ def check_file(file, suffix=''):
 
 def check_font(font=FONT, progress=False):
     # Download font to CONFIG_DIR if necessary
-    font = Path(font)
-    file = CONFIG_DIR / font.name
-    if not font.exists() and not file.exists():
-        url = "https://ultralytics.com/assets/" + font.name
-        LOGGER.info(f'Downloading {url} to {file}...')
-        torch.hub.download_url_to_file(url, str(file), progress=progress)
-
+    # font = Path(font)
+    # file = CONFIG_DIR / font.name
+    # if not font.exists() and not file.exists():
+    #     url = "https://ultralytics.com/assets/" + font.name
+    #     LOGGER.info(f'Downloading {url} to {file}...')
+    #     torch.hub.download_url_to_file(url, str(file), progress=progress)
+    return True
 
 def check_dataset(data, autodownload=True):
     # Download, check and/or unzip dataset if not found locally
