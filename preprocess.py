@@ -14,7 +14,7 @@ YOLO v5
 xml -> txt
 '''
 
-classes = ["front_head","side_head","back_head","mobile_phone","hand","person_on_phone"]
+classes = ['fixed_stall','sunshade','drying_object']
 class2id = {name:i for i, name in enumerate(classes)}
 
 def convert(size, box):
@@ -64,11 +64,11 @@ for file in files:
 # 2. 划分train与valid ~ K折
 K = 5
 files = glob('/home/data/*/*.txt')
-files = random.shuffle(files)
+random.shuffle(files)
 ind = len(files) // 5
-train = files[ind:]
-valid = [:ind]    
-print(f"train {len(more)}, val {len(less)}")
+train = [x.replace('.txt', '.jpg')+'\n' for x in files[ind:]]
+valid = [x.replace('.txt', '.jpg')+'\n' for x in files[:ind]]
+print(f"train {len(train)}, valid {len(valid)}")
 
 # 3. 写入文件
 with open('train.txt', 'w') as f:
