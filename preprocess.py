@@ -1,4 +1,3 @@
-# _*_ coding:utf-8 _*_
 import xml.etree.ElementTree as ET
 import pickle
 import os
@@ -8,12 +7,17 @@ import cv2
 import logging
 from glob import glob
 import time
+import random
+
 '''
 YOLO v5 
 xml -> txt
 '''
 
-class2id = {'rust':0,'dirty':1,'scratches':2,'defect':3}
+
+classes = []
+class2id = {name:i for i, name in enumerate(classes)}
+
 def convert(size, box):
     dw = 1./(size[0])
     dh = 1./(size[1])
@@ -36,7 +40,6 @@ def convert(size, box):
 def convert_annotation(image_path):
     in_file = open(image_path.replace('.xml', '.xml'),encoding="utf-8")
     out_file = open(image_path.replace('.xml', '.txt'), 'w')
-    # print(in_file)
     tree=ET.parse(in_file)
     root = tree.getroot()
     size = root.find('size')
@@ -45,7 +48,6 @@ def convert_annotation(image_path):
     if w == 0 or h == 0: 
         print(1)
         return
-
     for obj in root.iter('object'):
         name = obj.find('name').text
         cls_id = class2id[name]
@@ -54,9 +56,24 @@ def convert_annotation(image_path):
         bb = convert((w,h), b,)
         out_file.write(str(cls_id) + " " + " ".join([str(a) for a in bb]) + '\n')
 
-files = glob('/home/data/993/*.xml')
+# 1. 转换数据label
+files = glob('/home/data/*/*.xml')
+for file in files:
+    convert_annotation(file)
 
-if __name__ == '__main__':
-    for file in files:
-        convert_annotation(file)
+# 2. 划分train与valid ~ K折
+K = 5
+files = glob('/home/data/*/*.txt')
+random.shuffle(files)
+ind = len(files) // 5
+# train = [x.replace('.txt', '.jpg')+'\n' for x in files[ind:]]
+# valid = [x.replace('.txt', '.jpg')+'\n' for x in files[:ind]]
+train = [x.replace('.txt', '.jpg') for x in files[ind:]]
+valid = [x.replace('.txt', '.jpg') for x in files[:ind]]
+print(f"train {len(train)}, valid {len(valid)}")
 
+# 3. 写入文件
+with open('train.txt', 'w') as f:
+    f.write('\n'.join(train))
+with open('valid.txt', 'w') as f:
+    f.write('\n'.join(valid))
