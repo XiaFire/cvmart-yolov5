@@ -1,7 +1,7 @@
 cd /project/train/src_repo/v5/yolov5
 
 echo "Prepare environment..."
-pip install -r requirements.txt
+pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 echo "Processing data..."
 python ../preprocess.py
