@@ -1,6 +1,6 @@
-yolo_path = '/project/ev_sdk/src/yolo/'
+yolo_path = '/project/train/src_repo/v5/yolov5'
 model_path = '/project/train/models/*/weights/best.pt'
-names = ['person', 'knife', 'hand', 'others']
+names = ['fire','big_fire','smoke']
 conf_thres = 0.3
 iou_thres = 0.05
 prob_thres = 0.3
@@ -43,13 +43,13 @@ stride = 32
 
 def init():
     # Initialize
-    global imgsz, device, stride
+    global imgsz, device, stride,model_path
     set_logging()
     device = select_device(device)
     half = device.type != 'cpu'  # half precision only supported on CUDA
 
     # Load model
-    model = torch.jit.load(w) if 'torchscript' in w else attempt_load(weights, device=device)
+    model = torch.jit.load(model_path) if 'torchscript' in model_path else attempt_load(model_path, device=device)
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(imgsz, s=stride)  # check img_size
     model.eval()
@@ -96,18 +96,18 @@ def process_image(model, input_image=None, args=None, **kwargs):
                     continue
                 cnt += 1
                 fake_result["model_data"]['objects'].append({
-                    "xmin":int(xyxy[0]),
-                    "ymin":int(xyxy[1]),
-                    "xmax":int(xyxy[2]),
-                    "ymax":int(xyxy[3]),
+                    "x": int(xyxy[0]),
+                    "y": int(xyxy[1]),
+                    "wdith": int(xyxy[2])-int(xyxy[0]),
+                    "height": int(xyxy[3])-int(xyxy[1]),
                     "confidence":float(conf),
                     "name":names[int(cls)]
                 })
                 fake_result["algorithm_data"]["target_info"].append({
-                    "xmin":int(xyxy[0]),
-                    "ymin":int(xyxy[1]),
-                    "xmax":int(xyxy[2]),
-                    "ymax":int(xyxy[3]),
+                    "x": int(xyxy[0]),
+                    "y": int(xyxy[1]),
+                    "wdith": int(xyxy[2])-int(xyxy[0]),
+                    "height": int(xyxy[3])-int(xyxy[1]),
                     "confidence":float(conf),
                     "name":names[int(cls)]
                 }
@@ -133,11 +133,3 @@ if __name__ == '__main__':
         t2 = time.time()
         s += t2 - t1
     print(1/(s/100))
-
-
-
-
-
-
-
-
