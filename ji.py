@@ -98,7 +98,7 @@ def process_image(model, input_image=None, args=None, **kwargs):
                 fake_result["model_data"]['objects'].append({
                     "x": int(xyxy[0]),
                     "y": int(xyxy[1]),
-                    "wdith": int(xyxy[2])-int(xyxy[0]),
+                    "width": int(xyxy[2])-int(xyxy[0]),
                     "height": int(xyxy[3])-int(xyxy[1]),
                     "confidence":float(conf),
                     "name":names[int(cls)]
@@ -106,7 +106,7 @@ def process_image(model, input_image=None, args=None, **kwargs):
                 fake_result["algorithm_data"]["target_info"].append({
                     "x": int(xyxy[0]),
                     "y": int(xyxy[1]),
-                    "wdith": int(xyxy[2])-int(xyxy[0]),
+                    "width": int(xyxy[2])-int(xyxy[0]),
                     "height": int(xyxy[3])-int(xyxy[1]),
                     "confidence":float(conf),
                     "name":names[int(cls)]
